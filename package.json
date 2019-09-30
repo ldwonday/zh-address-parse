@@ -1,17 +1,19 @@
 {
-  "name": "webpack-boilerplate",
-  "version": "4.0.0",
-  "description": "Plain webpack 4 Boilerplate with Babel, SASS and lodash on board",
-  "author": "Christoph von Gellhorn",
+  "name": "zh-address-parse",
+  "version": "1.0.0",
+  "description": "chinese address parse",
+  "author": "wonday",
   "license": "MIT",
-  "homepage": "https://github.com/cvgellhorn/webpack-boilerplate",
+  "homepage": "https://github.com/ldwonday/zh-address-parse",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --progress --mode development --config webpack.config.dev.js",
-    "build": "webpack -p --progress --mode production --config webpack.config.build.js"
+    "build": "webpack -p --progress --mode production --config webpack.config.build.js",
+    "push-release": "sh ./scripts/release/release.sh",
+    "push-dev": "sh ./scripts/release/dev.sh"
   },
   "repository": {
     "type": "git",
-    "url": "https://cvgellhorn@github.com/cvgellhorn/webpack-boilerplate.git"
+    "url": "https://github.com/ldwonday/zh-address-parse.git"
   },
   "dependencies": {
     "jquery": "^3.4.1",
