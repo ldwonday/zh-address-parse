@@ -1,8 +1,6 @@
 China's delivery address parse
 ===========
 
-> Plain webpack 4 boilerplate with Babel, SASS and lodash on board
-
 ## Usage
 ```js
 import AddressParse from './lib/address-parse'

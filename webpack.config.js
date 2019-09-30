@@ -28,14 +28,6 @@ module.exports = {
             dirAssets
         ]
     },
-    optimization: {
-        splitChunks: {
-            //chunks: 'all',
-            cacheGroups: {
-                default: false,
-            }
-        },
-    },
     plugins: [
         new webpack.DefinePlugin({
             IS_DEV: IS_DEV
