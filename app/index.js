@@ -7,10 +7,6 @@ import 'styles/index.scss';
 import AddressParse from './lib/address-parse'
 import $ from 'jquery'
 
-// ================================
-// START YOUR APP HERE
-// ================================
-
 const parse = () => {
     const onTextAreaBlur = (e) => {
         const address = e.target.value

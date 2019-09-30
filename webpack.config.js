@@ -19,7 +19,7 @@ module.exports = {
         vendor: [
             'lodash'
         ],
-        bundle: path.join(dirApp, 'index')
+        bundle: path.join(dirApp, 'index'),
     },
     resolve: {
         modules: [
@@ -27,6 +27,14 @@ module.exports = {
             dirApp,
             dirAssets
         ]
+    },
+    optimization: {
+        splitChunks: {
+            //chunks: 'all',
+            cacheGroups: {
+                default: false,
+            }
+        },
     },
     plugins: [
         new webpack.DefinePlugin({

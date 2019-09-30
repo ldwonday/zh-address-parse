@@ -1,20 +1,14 @@
-Webpack 4 Boilerplate
+China's delivery address parse
 ===========
-
-[![Dependency Status](https://david-dm.org/cvgellhorn/webpack-boilerplate.svg)](https://david-dm.org/cvgellhorn/webpack-boilerplate) 
-[![devDependency Status](https://david-dm.org/cvgellhorn/webpack-boilerplate/dev-status.svg)](https://david-dm.org/cvgellhorn/webpack-boilerplate)
 
 > Plain webpack 4 boilerplate with Babel, SASS and lodash on board
 
-## Requirements
-You only need <b>node.js</b> pre-installed and you’re good to go. 
-
-If you don’t want to work with lodash, just remove it from the node packages and the webpack config.
-
 ## Usage
-Download to target directory or use this repository as a template
-```sh
-$ curl -L -o master.zip https://github.com/cvgellhorn/webpack-boilerplate/archive/master.zip && unzip master.zip && rm master.zip && mv ./webpack-boilerplate-master/{.,}* ./ && rm -r ./webpack-boilerplate-master
+```js
+import AddressParse from './lib/address-parse'
+const parseResult = AddressParse('your address')
+
+// The parseResult is an object contain { province: '', name: '', city: '', area: '', detail: '', phone: '' }
 ```
 
 ## Setup
@@ -33,7 +27,3 @@ Build the current application
 ```sh
 $ npm run build
 ```
-
-## [webpack](https://webpack.js.org/)
-If you're not familiar with webpack, the [webpack-dev-server](https://webpack.js.org/configuration/dev-server/) will serve the static files in your build folder and watch your source files for changes.
-When changes are made the bundle will be recompiled. This modified bundle is served from memory at the relative path specified in publicPath.
