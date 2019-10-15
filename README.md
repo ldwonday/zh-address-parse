@@ -4,7 +4,7 @@ China's delivery address parse
 [Test page](https://ldwonday.github.io/zh-address-parse/)
 ## Usage
 ```js
-import AddressParse from './lib/address-parse'
+import AddressParse from './dist/zh-address-parse.min.js'
 const parseResult = AddressParse('your address')
 
 // The parseResult is an object contain { province: '', name: '', city: '', area: '', detail: '', phone: '' }

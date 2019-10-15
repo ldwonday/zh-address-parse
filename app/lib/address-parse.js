@@ -20,7 +20,14 @@ const areaFormat = addressJson.reduce((per, cur) => {
     }, []))
 }, [])*/
 
-const AddressParse = (address) => {
+/**
+ * 需要解析的地址，type是解析的方式，默认是正则匹配
+ * @param address
+ * @param type
+ * @returns {{}|({area: Array, province: Array, phone: string, city: Array, name: string, detail: Array} & {area: (*|string), province: (*|string), city: (*|string), detail: (Array|boolean|string|string)})}
+ * @constructor
+ */
+const AddressParse = (address, type = 0) => {
     if (!address) {
         return {}
     }
@@ -75,8 +82,9 @@ const AddressParse = (address) => {
         // 识别地址
         if (!parseResult.province[0] || !parseResult.city[0] || !parseResult.area[0]) {
             // 两个方法都可以解析，正则和树查找
-            //const parse = parseRegion(item, parseResult)
-            const parse = parseRegionWithRegexp(item, parseResult)
+            let parse
+            type === 1 && (parse = parseRegion(item, parseResult))
+            type === 0 && (parse = parseRegionWithRegexp(item, parseResult))
             const { province, city, area, detail } = parse
             parseResult.province = province || []
             parseResult.area = area || []
@@ -129,7 +137,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     if (province.length === 0) {
         for(let i = 1; i < fragment.length; i++ ) {
             const str = fragment.substring(0, i + 1)
-            const regexProvince = new RegExp(`\{\"code\":\"[0-9]*\",\"name\":\"${str}[\u4E00-\u9FA5]*?\"}`, 'g')
+            const regexProvince = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\"}`, 'g')
             const matchProvince = provinceString.match(regexProvince)
             if (matchProvince) {
                 if (matchProvince.length === 1) {
@@ -165,12 +173,12 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
         }
         if (city[0]) {
             const { provinceCode } = city[0]
+            fragment = fragment.replace(matchStr, '')
             if (province.length === 0) {
-                const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]*?\"}`, 'g')
+                const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]+?\"}`, 'g')
                 const matchProvince = provinceString.match(regexProvince)
                 province.push(JSON.parse(matchProvince[0]))
             }
-            fragment = fragment.replace(matchStr, '')
         }
 
     }
@@ -194,17 +202,18 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
             const { provinceCode, cityCode } = area[0]
             fragment = fragment.replace(matchStr, '')
             if (province.length === 0) {
-                const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]*?\"}`, 'g')
+                const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]+?\"}`, 'g')
                 const matchProvince = provinceString.match(regexProvince)
                 province.push(JSON.parse(matchProvince[0]))
             }
             if (city.length === 0) {
-                const regexCity = new RegExp(`\{\"code\":\"${cityCode}\",\"name\":\"[\u4E00-\u9FA5]*?\",\"provinceCode\":\"${provinceCode}\"\}`, 'g')
+                const regexCity = new RegExp(`\{\"code\":\"${cityCode}\",\"name\":\"[\u4E00-\u9FA5]+?\",\"provinceCode\":\"${provinceCode}\"\}`, 'g')
                 const matchCity = cityString.match(regexCity)
                 city.push(JSON.parse(matchCity[0]))
             }
         }
     }
+
 
     detail = fragment
 
@@ -246,7 +255,6 @@ const parseRegion = (fragment, hasParseResult) => {
             }
         }
     }
-
     if (hasParseResult.city[0]) {
         city = hasParseResult.city
     } else {
