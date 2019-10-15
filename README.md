@@ -5,7 +5,8 @@ China's delivery address parse
 ## Usage
 ```js
 import AddressParse from './dist/zh-address-parse.min.js'
-const parseResult = AddressParse('your address')
+// 参数0表示使用正则解析，1表示采用树查找
+const parseResult = AddressParse('your address', 0)
 
 // The parseResult is an object contain { province: '', name: '', city: '', area: '', detail: '', phone: '' }
 ```
