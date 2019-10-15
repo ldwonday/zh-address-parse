@@ -9,6 +9,7 @@ then
   echo "Releasing $VERSION ..."
 
   npm run build
+  npm run build-lib
   # commit
   npm version $VERSION --message "build: $VERSION"
   git checkout master
