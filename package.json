@@ -9,8 +9,8 @@
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --progress --mode development --config webpack.config.dev.js",
     "build": "webpack -p --progress --mode production --config webpack.config.build.js",
     "build-lib": "webpack -p --progress --mode production --config webpack.config.build.lib.js",
-    "push-release": "sh ./scripts/release/release.sh",
-    "push-dev": "sh ./scripts/release/dev.sh"
+    "push-release": "sh ./scripts/release.sh",
+    "push-dev": "sh ./scripts/dev.sh"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,6 @@
   "dependencies": {
     "jquery": "^3.4.1",
     "lodash": "4.17.15",
-    "nodejieba": "^2.3.2",
     "segmentit": "^2.0.2"
   },
   "devDependencies": {

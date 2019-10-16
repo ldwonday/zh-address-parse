@@ -1,29 +1,40 @@
-import provinces from './provinces'
-import cities from './cities'
-import areas from './areas'
 import zhCnNames from './names'
+import addressJson from './pca-code'
 
-/*const provinceFormat = addressJson.reduce((per, cur) => {
+const log = (...infos) => {
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(...infos)
+    }
+}
+const provinces = addressJson.reduce((per, cur) => {
     const { children, ...others } = cur
     return per.concat(others)
 }, [])
 
-const cityFormat = addressJson.reduce((per, cur) => {
-    return per.concat(cur.children.map(({ children, ...others }) => ({ provinceCode: cur.code, ...others })))
+const cities = addressJson.reduce((per, cur) => {
+    return per.concat(cur.children.map(({ children, ...others }) => ({ ...others, provinceCode: cur.code })))
 }, [])
 
-const areaFormat = addressJson.reduce((per, cur) => {
+const areas = addressJson.reduce((per, cur) => {
     const provinceCode = cur.code
     return per.concat(cur.children.reduce((p, c) => {
         const cityCode = c.code
-        return p.concat(c.children.map(({ children, ...others }) => ({ provinceCode, cityCode, ...others })))
+        return p.concat(c.children.map(({ children, ...others }) => ({ ...others, cityCode, provinceCode,  })))
     }, []))
-}, [])*/
+}, [])
+
+const provinceString = JSON.stringify(provinces)
+const cityString = JSON.stringify(cities)
+const areaString = JSON.stringify(areas)
+
+log(provinces)
+log(cities)
+log(areas)
 
 /**
  * 需要解析的地址，type是解析的方式，默认是正则匹配
  * @param address
- * @param type
+ * @param type 0:正则，1：树查找
  * @returns {{}|({area: Array, province: Array, phone: string, city: Array, name: string, detail: Array} & {area: (*|string), province: (*|string), city: (*|string), detail: (Array|boolean|string|string)})}
  * @constructor
  */
@@ -40,17 +51,17 @@ const AddressParse = (address, type = 0) => {
         name: '',
     }
     address = cleanAddress(address)
-    console.log('清洗后address --->', address)
+    log('清洗后address --->', address)
 
     // 识别手机号
     const filter = filterPhone(address)
     address = filter.address
     parseResult.phone = filter.phone
-    console.log('获取手机号的结果 --->', address)
+    log('获取手机号的结果 --->', address)
 
     // 地址分割
     const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
-    console.log('分割地址 --->', splitAddress)
+    log('分割地址 --->', splitAddress)
 
     // 找出姓名
     const nameIndex = splitAddress.findIndex(item => judgeFragmentIsName(item))
@@ -58,26 +69,11 @@ const AddressParse = (address, type = 0) => {
         parseResult.name = splitAddress.splice(nameIndex, 1)[0]
     }
 
-    console.log('获取姓名后 --->', splitAddress)
+    log('获取姓名后 --->', splitAddress)
 
     const d1 = new Date().getTime()
 
     // 找省市区和详细地址
-
-    /*splitAddress.forEach((item, index) => {
-        // 识别地址
-        if (!parseResult.province[0] || !parseResult.city[0] || !parseResult.area[0]) {
-            const parse = parseRegion(item, parseResult)
-            const { province, city, area, detail } = parse
-            parseResult.province = province || []
-            parseResult.area = area || []
-            parseResult.city = city || []
-            parseResult.detail = parseResult.detail.concat(detail || [])
-        } else {
-            parseResult.detail.push(item)
-        }
-    })*/
-
     splitAddress.forEach((item, index) => {
         // 识别地址
         if (!parseResult.province[0] || !parseResult.city[0] || !parseResult.area[0]) {
@@ -97,7 +93,7 @@ const AddressParse = (address, type = 0) => {
 
     const d2 = new Date().getTime()
 
-    console.log('解析耗时--->', d2 - d1)
+    log('解析耗时--->', d2 - d1)
 
     // 地址都解析完了，如果还没有姓名，那么姓名应该是在详细地址里面，取详细地址里面长度最小的那个
     if (!parseResult.name) {
@@ -120,9 +116,6 @@ const AddressParse = (address, type = 0) => {
         detail: (detail && detail.length > 0 && detail.join('')) || ''
     })
 }
-const provinceString = JSON.stringify(provinces)
-const cityString = JSON.stringify(cities)
-const areaString = JSON.stringify(areas)
 
 /**
  * 利用正则表达式解析
@@ -131,6 +124,7 @@ const areaString = JSON.stringify(areas)
  * @returns {{area: (Array|*|string), province: (Array|*|string), city: (Array|*|string|string), detail: (*|Array)}}
  */
 const parseRegionWithRegexp = (fragment, hasParseResult) => {
+    log('----- 当前使用正则匹配模式 -----')
     let province = hasParseResult.province || [], city = hasParseResult.city || [], area = hasParseResult.area || [], detail = []
 
     let matchStr = ''
@@ -186,7 +180,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     if (area.length === 0) {
         for(let i = 0; i < fragment.length; i++ ) {
             const str = fragment.substring(0, i + 1)
-            const regexArea = new RegExp(`\{+?\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"cityCode\":\"${city[0] ? city[0].code : '[0-9]{1,6}'}\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}+?`, 'g')
+            const regexArea = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"cityCode\":\"${city[0] ? city[0].code : '[0-9]{1,6}'}\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
             const matchArea = areaString.match(regexArea)
             if (matchArea) {
                 if (matchArea.length === 1) {
@@ -232,6 +226,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
  * @returns {{area: Array, province: Array, city: Array, detail: Array}}
  */
 const parseRegion = (fragment, hasParseResult) => {
+    log('----- 当前使用树查找模式 -----')
     let province = [], city = [], area = [], detail = []
 
     if (hasParseResult.province[0]) {
