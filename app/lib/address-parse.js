@@ -392,8 +392,10 @@ const filterPhone = (address) => {
     // 整理电话格式
     address = address.replace(/(\d{3})-(\d{4})-(\d{4})/g, '$1$2$3')
     address = address.replace(/(\d{3}) (\d{4}) (\d{4})/g, '$1$2$3')
+    address = address.replace(/(\d{4}) \d{4} \d{4}/g, '$1$2$3')
+    address = address.replace(/(\d{4})/g, '$1')
 
-    const mobileReg = /(\d{7,11})|(\d{3,4}-\d{6,8})|(86-[1][0-9]{10})|(86[1][0-9]{10})|([1][0-9]{10})/g
+    const mobileReg = /(\d{7,12})|(\d{3,4}-\d{6,8})|(86-[1][0-9]{10})|(86[1][0-9]{10})|([1][0-9]{10})/g
     const mobile = mobileReg.exec(address)
     if (mobile) {
         phone = mobile[0]
