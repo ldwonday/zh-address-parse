@@ -7,19 +7,19 @@ const log = (...infos) => {
     }
 }
 const provinces = addressJson.reduce((per, cur) => {
-    const { children, ...others } = cur
+    const {children, ...others} = cur
     return per.concat(others)
 }, [])
 
 const cities = addressJson.reduce((per, cur) => {
-    return per.concat(cur.children.map(({ children, ...others }) => ({ ...others, provinceCode: cur.code })))
+    return per.concat(cur.children.map(({children, ...others}) => ({...others, provinceCode: cur.code})))
 }, [])
 
 const areas = addressJson.reduce((per, cur) => {
     const provinceCode = cur.code
     return per.concat(cur.children.reduce((p, c) => {
         const cityCode = c.code
-        return p.concat(c.children.map(({ children, ...others }) => ({ ...others, cityCode, provinceCode,  })))
+        return p.concat(c.children.map(({children, ...others}) => ({...others, cityCode, provinceCode,})))
     }, []))
 }, [])
 
@@ -54,10 +54,15 @@ const AddressParse = (address, type = 0) => {
     log('清洗后address --->', address)
 
     // 识别手机号
-    const filter = filterPhone(address)
-    address = filter.address
-    parseResult.phone = filter.phone
-    log('获取手机号的结果 --->', address)
+    const resultPhone = filterPhone(address)
+    address = resultPhone.address
+    parseResult.phone = resultPhone.phone
+    log('获取电话的结果 --->', address)
+
+    const resultCode = filterPostalCode(address)
+    address = resultCode.address
+    parseResult.postalCode = resultCode.postalCode
+    log('获取邮编的结果 --->', address)
 
     // 地址分割
     const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
@@ -81,7 +86,7 @@ const AddressParse = (address, type = 0) => {
             let parse
             type === 1 && (parse = parseRegion(item, parseResult))
             type === 0 && (parse = parseRegionWithRegexp(item, parseResult))
-            const { province, city, area, detail } = parse
+            const {province, city, area, detail} = parse
             parseResult.province = province || []
             parseResult.area = area || []
             parseResult.city = city || []
@@ -104,12 +109,14 @@ const AddressParse = (address, type = 0) => {
         parseResult.detail.splice(nameIndex, 1)
     }
 
+    log(JSON.stringify(parseResult))
+
     const province = parseResult.province[0]
     const city = parseResult.city[0]
     const area = parseResult.area[0]
     const detail = parseResult.detail
 
-    return Object.assign(parseResult,{
+    return Object.assign(parseResult, {
         province: (province && province.name) || '',
         city: (city && city.name) || '',
         area: (area && area.name) || '',
@@ -125,11 +132,12 @@ const AddressParse = (address, type = 0) => {
  */
 const parseRegionWithRegexp = (fragment, hasParseResult) => {
     log('----- 当前使用正则匹配模式 -----')
-    let province = hasParseResult.province || [], city = hasParseResult.city || [], area = hasParseResult.area || [], detail = []
+    let province = hasParseResult.province || [], city = hasParseResult.city || [], area = hasParseResult.area || [],
+        detail = []
 
     let matchStr = ''
     if (province.length === 0) {
-        for(let i = 1; i < fragment.length; i++ ) {
+        for (let i = 1; i < fragment.length; i++) {
             const str = fragment.substring(0, i + 1)
             const regexProvince = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\"}`, 'g')
             const matchProvince = provinceString.match(regexProvince)
@@ -151,7 +159,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     }
 
     if (city.length === 0) {
-        for(let i = 1; i < fragment.length; i++ ) {
+        for (let i = 1; i < fragment.length; i++) {
             const str = fragment.substring(0, i + 1)
             const regexCity = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
             const matchCity = cityString.match(regexCity)
@@ -166,7 +174,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
             }
         }
         if (city[0]) {
-            const { provinceCode } = city[0]
+            const {provinceCode} = city[0]
             fragment = fragment.replace(matchStr, '')
             if (province.length === 0) {
                 const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]+?\"}`, 'g')
@@ -178,7 +186,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     }
 
     if (area.length === 0) {
-        for(let i = 0; i < fragment.length; i++ ) {
+        for (let i = 0; i < fragment.length; i++) {
             const str = fragment.substring(0, i + 1)
             const regexArea = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"cityCode\":\"${city[0] ? city[0].code : '[0-9]{1,6}'}\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
             const matchArea = areaString.match(regexArea)
@@ -193,7 +201,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
             }
         }
         if (area[0]) {
-            const { provinceCode, cityCode } = area[0]
+            const {provinceCode, cityCode} = area[0]
             fragment = fragment.replace(matchStr, '')
             if (province.length === 0) {
                 const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]+?\"}`, 'g')
@@ -374,12 +382,18 @@ const judgeFragmentIsName = (fragment) => {
     return ''
 }
 
+/**
+ * 匹配电话
+ * @param address
+ * @returns {{address: *, phone: string}}
+ */
 const filterPhone = (address) => {
     let phone = ''
     // 整理电话格式
     address = address.replace(/(\d{3})-(\d{4})-(\d{4})/g, '$1$2$3')
     address = address.replace(/(\d{3}) (\d{4}) (\d{4})/g, '$1$2$3')
-    const mobileReg = /(86-[1][0-9]{10})|(86[1][0-9]{10})|([1][0-9]{10})/g
+
+    const mobileReg = /(\d{7,11})|(\d{3,4}-\d{6,8})|(86-[1][0-9]{10})|(86[1][0-9]{10})|([1][0-9]{10})/g
     const mobile = mobileReg.exec(address)
     if (mobile) {
         phone = mobile[0]
@@ -388,6 +402,27 @@ const filterPhone = (address) => {
     return {address, phone}
 }
 
+/**
+ * 匹配邮编
+ * @param address
+ * @returns {{address: *, postalCode: string}}
+ */
+const filterPostalCode = (address) => {
+    let postalCode = ''
+    const postalCodeReg = /\d{6}/g
+    const code = postalCodeReg.exec(address)
+    if (code) {
+        postalCode = code[0]
+        address = address.replace(code[0], ' ')
+    }
+    return {address, postalCode}
+}
+
+/**
+ * 地址清洗
+ * @param address
+ * @returns {*}
+ */
 const cleanAddress = (address) => {
     // 去换行等
     address = address
