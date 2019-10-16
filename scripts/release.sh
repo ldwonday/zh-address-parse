@@ -10,6 +10,9 @@ then
 
   npm run build
   npm run build-lib
+  git add .
+  git commit -m "$VERSION"
+  git push origin develop
   # commit
   npm version $VERSION --message "build: $VERSION"
   git checkout master
