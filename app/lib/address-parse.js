@@ -68,14 +68,6 @@ const AddressParse = (address, type = 0) => {
     const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
     log('分割地址 --->', splitAddress)
 
-    // 找出姓名
-    const nameIndex = splitAddress.findIndex(item => judgeFragmentIsName(item))
-    if (nameIndex >= 0) {
-        parseResult.name = splitAddress.splice(nameIndex, 1)[0]
-    }
-
-    log('获取姓名后 --->', splitAddress)
-
     const d1 = new Date().getTime()
 
     // 找省市区和详细地址
@@ -95,6 +87,8 @@ const AddressParse = (address, type = 0) => {
             parseResult.detail.push(item)
         }
     })
+
+    console.log('--->', splitAddress)
 
     const d2 = new Date().getTime()
 
@@ -217,7 +211,10 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     }
 
 
-    detail = fragment
+    // 解析完省市区如果还存在地址，则默认为详细地址
+    if (fragment.length > 0) {
+        detail.push(fragment)
+    }
 
     return {
         province,
