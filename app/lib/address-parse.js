@@ -136,10 +136,11 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
             const regexProvince = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\"}`, 'g')
             const matchProvince = provinceString.match(regexProvince)
             if (matchProvince) {
+                const provinceObj = JSON.parse(matchProvince[0])
                 if (matchProvince.length === 1) {
                     province = []
                     matchStr = str
-                    province.push(JSON.parse(matchProvince[0]))
+                    province.push(provinceObj)
                 }
             } else {
                 break
@@ -158,10 +159,11 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
             const regexCity = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
             const matchCity = cityString.match(regexCity)
             if (matchCity) {
+                const cityObj = JSON.parse(matchCity[0])
                 if (matchCity.length === 1) {
                     city = []
                     matchStr = str
-                    city.push(JSON.parse(matchCity[0]))
+                    city.push(cityObj)
                 }
             } else {
                 break
@@ -180,15 +182,16 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     }
 
     if (area.length === 0) {
-        for (let i = 0; i < fragment.length; i++) {
+        for (let i = 1; i < fragment.length; i++) {
             const str = fragment.substring(0, i + 1)
             const regexArea = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"cityCode\":\"${city[0] ? city[0].code : '[0-9]{1,6}'}\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
             const matchArea = areaString.match(regexArea)
             if (matchArea) {
+                const areaObj = JSON.parse(matchArea[0])
                 if (matchArea.length === 1) {
                     area = []
                     matchStr = str
-                    area.push(JSON.parse(matchArea[0]))
+                    area.push(areaObj)
                 }
             } else {
                 break
