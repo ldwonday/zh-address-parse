@@ -53,3 +53,8 @@ Build the current application
 ```sh
 $ npm run build
 ```
+## donate
+<p align="center">
+	<img src="/assets/images/wechat.jpeg" alt="Sample"  width="300" height="300">
+	<img src="/assets/images/alipay.jpeg" alt="Sample"  width="300" height="300">
+</p>
