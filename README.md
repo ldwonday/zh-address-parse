@@ -55,7 +55,5 @@ $ npm run build
 ```
 ## donate
 > 您的支持是我前进的动力，更好的支持开源事业！~
-<p align="left">
-	<img src="https://github.com/ldwonday/zh-address-parse/blob/master/assets/images/wechat.png" alt="微信打赏" width="300" height="400">
-	<img src="https://github.com/ldwonday/zh-address-parse/blob/master/assets/images/alipay.png" alt="支付宝打赏" width="300" height="300">
-</p>
+![微信打赏](./assets/images/wechat.png){:height="300" width="400"}
+![支付宝打赏](./assets/images/alipay.png){:height="300" width="300"}
