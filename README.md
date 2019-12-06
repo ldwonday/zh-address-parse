@@ -56,5 +56,5 @@ $ npm run build
 ## donate
 > 您的支持是我前进的动力，更好的支持开源事业！~
 
-<span><img src="./assets/images/wechat.png" width="300" height="350"></span>
-<span><img src="./assets/images/alipay.png" width="300" height="300"></span>
+<span style="display: inline-block;vertical-align: top;"><img src="./assets/images/wechat.png" width="300" height="350"></span>
+<span style="display: inline-block;vertical-align: top;"><img src="./assets/images/alipay.png" width="300" height="300"></span>
