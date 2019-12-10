@@ -3,7 +3,7 @@ China's delivery address parse
 ## Test
 [Test page](https://ldwonday.github.io/zh-address-parse/)
 ## Usage
-> 语法：AddressParse(address[, option])
+> 语法：AddressParse(address[, [option|0|1]])
 
 > import
 
