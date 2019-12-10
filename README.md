@@ -3,10 +3,13 @@ China's delivery address parse
 ## Test
 [Test page](https://ldwonday.github.io/zh-address-parse/)
 ## Usage
+> 语法：AddressParse(address[, option])
+
 > import
 
 ```js
 import AddressParse from './dist/zh-address-parse.min.js'
+// options为可选参数
 const options = {
   type: 0,
   textFilter: [],
