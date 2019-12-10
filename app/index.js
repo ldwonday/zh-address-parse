@@ -10,7 +10,7 @@ import $ from 'jquery'
 const parse = () => {
     const onTextAreaBlur = (e) => {
         const address = e.target.value
-        const parseResult = AddressParse(address, 0)
+        const parseResult = AddressParse(address, { type: 0, textFilter: ['电話', '電話', '聯系人'] })
         console.log(parseResult)
         $('#result').empty();
         $('#result').append(`<ul>${Object.entries(parseResult).map(([k, v]) => `<li>${k}：${v}</li>`).join('')}</ul>`)

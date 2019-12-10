@@ -7,8 +7,12 @@ China's delivery address parse
 
 ```js
 import AddressParse from './dist/zh-address-parse.min.js'
-// 参数0表示使用正则解析，1表示采用树查找
-const parseResult = AddressParse('your address', 0)
+const options = {
+  type: 0,
+  textFilter: [],
+}
+// type参数0表示使用正则解析，1表示采用树查找, textFilter地址预清洗过滤字段。
+const parseResult = AddressParse('your address', options)
 // The parseResult is an object contain { province: '', name: '', city: '', area: '', detail: '', phone: '', postalCode: '' }
 ```
 > script引入
@@ -19,7 +23,7 @@ const parseResult = AddressParse('your address', 0)
     const parse = () => {
         const onTextAreaBlur = (e) => {
             const address = e.target.value
-            const parseResult = window.ZhAddressParse(address, 0)
+            const parseResult = window.ZhAddressParse(address, { type: 0, textFilter: ['电話', '電話', '聯系人'] })
             // The parseResult is an object contain { province: '', name: '', city: '', area: '', detail: '', phone: '', postalCode: '' }
             console.log(parseResult)
             $('#result').empty();
@@ -53,7 +57,7 @@ Build the current application
 ```sh
 $ npm run build
 ```
-## donate
+## Donate
 > 您的支持是我前进的动力，更好的支持开源事业！~
 
 <span><img src="./assets/images/wechat.png" width="300" height="300"></span>

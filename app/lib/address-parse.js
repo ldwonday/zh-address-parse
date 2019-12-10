@@ -38,7 +38,7 @@ log(areas)
  * @returns {{}|({area: Array, province: Array, phone: string, city: Array, name: string, detail: Array} & {area: (*|string), province: (*|string), city: (*|string), detail: (Array|boolean|string|string)})}
  * @constructor
  */
-const AddressParse = (address, type = 0) => {
+const AddressParse = (address, { type = 0, textFilter = [] } = {}) => {
     if (!address) {
         return {}
     }
@@ -50,7 +50,7 @@ const AddressParse = (address, type = 0) => {
         detail: [],
         name: '',
     }
-    address = cleanAddress(address)
+    address = cleanAddress(address, textFilter)
     log('清洗后address --->', address)
 
     // 识别手机号
@@ -425,7 +425,7 @@ const filterPostalCode = (address) => {
  * @param address
  * @returns {*}
  */
-const cleanAddress = (address) => {
+const cleanAddress = (address, textFilter = []) => {
     // 去换行等
     address = address
         .replace(/\r\n/g, ' ')
@@ -451,7 +451,7 @@ const cleanAddress = (address) => {
         '联系人手机号码',
         '手机号码',
         '手机号',
-    ]
+    ].concat(textFilter)
     search.forEach(str => {
         address = address.replace(new RegExp(str, 'g'), ' ')
     })
