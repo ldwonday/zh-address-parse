@@ -105,11 +105,8 @@ const AddressParse = (address, options) => {
     // 地址都解析完了，姓名应该是在详细地址里面，取详细地址里面长度最小切长度小于4的那个
     if (detail && detail.length > 0) {
         detail.sort((a, b) => a.length - b.length)
-        if (detail[0].length <= nameMaxLength) {
-            parseResult.name = detail[0]
-            const nameIndex = parseResult.detail.findIndex(item => item === parseResult.name)
-            parseResult.detail.splice(nameIndex, 1)
-        }
+        const index = detail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
+        parseResult.detail.splice(index, 1)
     }
 
     log(JSON.stringify(parseResult))
@@ -366,7 +363,7 @@ const parseRegion = (fragment, hasParseResult) => {
  * @param fragment
  * @returns {string}
  */
-const judgeFragmentIsName = (fragment) => {
+const judgeFragmentIsName = (fragment, nameMaxLength) => {
     if (!fragment) {
         return ''
     }
@@ -379,7 +376,7 @@ const judgeFragmentIsName = (fragment) => {
 
     // 如果百家姓里面能找到这个姓，并且长度在1-5之间
     const nameFirst = fragment.substring(0, 1)
-    if (fragment.length < 5 && fragment.length > 1 && zhCnNames.indexOf(nameFirst) !== -1) {
+    if (fragment.length <= nameMaxLength && fragment.length > 1 && zhCnNames.indexOf(nameFirst) !== -1) {
         return fragment
     }
 
