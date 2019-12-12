@@ -39,7 +39,7 @@ log(areas)
  * @constructor
  */
 const AddressParse = (address, options) => {
-    const { type = 0, textFilter = [] } = typeof options === 'object' ? options : {}
+    const { type = 0, textFilter = [], nameMaxLength = 4 } = typeof options === 'object' ? options : {}
 
     if (!address) {
         return {}
@@ -97,21 +97,22 @@ const AddressParse = (address, options) => {
 
     log('解析耗时--->', d2 - d1)
 
-    // 地址都解析完了，如果还没有姓名，那么姓名应该是在详细地址里面，取详细地址里面长度最小的那个
-    if (!parseResult.name) {
-        const detail = JSON.parse(JSON.stringify(parseResult.detail))
-        detail.sort((a, b) => a.length - b.length)
-        parseResult.name = detail[0]
-        const nameIndex = parseResult.detail.findIndex(item => item === parseResult.name)
-        parseResult.detail.splice(nameIndex, 1)
-    }
-
-    log(JSON.stringify(parseResult))
-
     const province = parseResult.province[0]
     const city = parseResult.city[0]
     const area = parseResult.area[0]
     const detail = parseResult.detail
+
+    // 地址都解析完了，姓名应该是在详细地址里面，取详细地址里面长度最小切长度小于4的那个
+    if (detail && detail.length > 0) {
+        detail.sort((a, b) => a.length - b.length)
+        if (detail[0].length <= nameMaxLength) {
+            parseResult.name = detail[0]
+            const nameIndex = parseResult.detail.findIndex(item => item === parseResult.name)
+            parseResult.detail.splice(nameIndex, 1)
+        }
+    }
+
+    log(JSON.stringify(parseResult))
 
     return Object.assign(parseResult, {
         province: (province && province.name) || '',
