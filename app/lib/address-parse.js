@@ -102,11 +102,19 @@ const AddressParse = (address, options) => {
     const area = parseResult.area[0]
     const detail = parseResult.detail
 
-    // 地址都解析完了，姓名应该是在详细地址里面，取详细地址里面长度最小切长度小于4的那个
+    // 地址都解析完了，姓名应该是在详细地址里面
     if (detail && detail.length > 0) {
         detail.sort((a, b) => a.length - b.length)
         const index = detail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
-        parseResult.detail.splice(index, 1)
+        if (index !== -1) {
+            parseResult.name = detail[index]
+            parseResult.detail.splice(index, 1)
+        } else if (detail[0].length <= nameMaxLength && /[\u4E00-\u9FA5]/.test(detail[0])) {
+            parseResult.name = detail[0] || ''
+            parseResult.detail.shift()
+        } else {
+            parseResult.name = ''
+        }
     }
 
     log(JSON.stringify(parseResult))
@@ -364,7 +372,7 @@ const parseRegion = (fragment, hasParseResult) => {
  * @returns {string}
  */
 const judgeFragmentIsName = (fragment, nameMaxLength) => {
-    if (!fragment) {
+    if (!fragment || !/[\u4E00-\u9FA5]/.test(fragment)) {
         return ''
     }
 
