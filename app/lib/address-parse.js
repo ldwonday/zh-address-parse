@@ -104,16 +104,22 @@ const AddressParse = (address, options) => {
 
     // 地址都解析完了，姓名应该是在详细地址里面
     if (detail && detail.length > 0) {
-        detail.sort((a, b) => a.length - b.length)
-        const index = detail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
+        const copyDetail = [...detail]
+        copyDetail.sort((a, b) => a.length - b.length)
+        log('copyDetail --->', copyDetail)
+        // 排序后从最短的开始找名字，没找到的话就看第一个是不是咯
+        const index = copyDetail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
+        let name = ''
         if (index !== -1) {
-            parseResult.name = detail[index]
-            parseResult.detail.splice(index, 1)
-        } else if (detail[0].length <= nameMaxLength && /[\u4E00-\u9FA5]/.test(detail[0])) {
-            parseResult.name = detail[0] || ''
-            parseResult.detail.shift()
-        } else {
-            parseResult.name = ''
+            name = copyDetail[index]
+        } else if (copyDetail[0].length <= nameMaxLength && /[\u4E00-\u9FA5]/.test(copyDetail[0])) {
+            name = copyDetail[0]
+        }
+
+        // 找到了名字就从详细地址里面删除它
+        if (name) {
+            parseResult.name = name
+            detail.splice(detail.findIndex(item => item === name), 1)
         }
     }
 
