@@ -10,9 +10,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     npm run build
     npm run build-lib
     npm version $VERSION --message "build: $VERSION"
-    git add .
-    git commit -m "$VERSION"
-    git push origin develop
     # commit
     git checkout master
     git merge develop
