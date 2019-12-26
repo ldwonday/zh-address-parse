@@ -78,7 +78,7 @@ const AddressParse = (address, options) => {
         // 识别地址
         if (!parseResult.province[0] || !parseResult.city[0] || !parseResult.area[0]) {
             // 两个方法都可以解析，正则和树查找
-            let parse
+            let parse = {}
             type === 1 && (parse = parseRegion(item, parseResult))
             type === 0 && (parse = parseRegionWithRegexp(item, parseResult))
             const {province, city, area, detail} = parse
