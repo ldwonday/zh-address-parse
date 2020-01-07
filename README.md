@@ -1,10 +1,19 @@
 China's delivery address parse
 ===========
-## Test
+### Preview
 [Test page](https://ldwonday.github.io/zh-address-parse/)
-## Usage
-> 语法：AddressParse(address[, [option|0|1]])
+## Syntax
+> AddressParse(address[, [option|0|1]])
 
+option可选参数属性列表
+
+|参数名|是否必填|默认值|
+|----|----|----|
+|type|否|0|
+|textFilter|否|[]|
+|nameMaxLength|否|4|
+
+## Usage
 > import
 
 ```js
