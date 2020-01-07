@@ -7,11 +7,11 @@ China's delivery address parse
 
 option可选参数属性列表
 
-|参数名|是否必填|默认值|
-|----|----|----|
-|type|否|0|
-|textFilter|否|[]|
-|nameMaxLength|否|4|
+|参数名|说明|类型|是否必填|默认值|
+|----|----|----|----|----|
+|type|解析方式|Number|否|0|
+|textFilter|预过滤字段|Array|否|[]|
+|nameMaxLength|中文名最大长度|Number|否|4|
 
 ## Usage
 > import
