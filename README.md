@@ -1,6 +1,6 @@
 China's delivery address parse
 ===========
-### Preview
+## Preview
 [Test page](https://ldwonday.github.io/zh-address-parse/)
 ## Syntax
 > AddressParse(address[, [option|0|1]])
