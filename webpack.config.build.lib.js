@@ -32,5 +32,11 @@ module.exports = {
                 }
             },
         ]
-    }
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, 'index.html'),
+            title: 'zh-address-parse'
+        })
+    ],
 };
