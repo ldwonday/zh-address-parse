@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <style>
-        html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}.content textarea{font-size:16px;padding:10px;height:100px;width:100%;outline:none;border-radius:8px;border:1px solid #e5c2b5}.support-list ul{margin:0;padding:0;display:flex;align-items:center;flex-wrap:wrap;list-style:none}.support-list ul li{font-size:14px;margin-right:8px;margin-bottom:8px;background:#e5c2b5;transition:all 0.3s;padding:8px;border-radius:4px;cursor:pointer}.support-list ul li:hover{background:rgba(229,194,181,0.6)}
-    </style>
+    <title>zh-address-parse</title>
 </head>
 <body>
 <div class="support-list">
@@ -96,46 +93,45 @@
             贵州省都匀市。甘塘镇绿茵湖村一组2号  刘雪莉     13111111111
         </li>
         <li>
-            湛江市廉江市车板镇人才市场，13111111111.曹建林
+            湛江市廉江市车板镇人才市场，0755-22107333.曹建林 邮编：713200
         </li>
         <li>
             广东省清远市 清城区洲心街道，金茂家园一栋一楼100号商铺   13111111111 聂小姐
         </li>
+        <li>
+            江苏省 苏州市 吴江区 干将东路678号江苏大厦11楼 215000 徐天宇 13911111111
+        </li>
+        <li>
+            王小梅13911111111湖南省郴州市桂东县桂东县清泉镇
+        </li>
+        <li>
+            莫席辉13911111111广西壮族自治区柳州市柳北区跃进路42号4栋20楼
+        </li>
+        <li>
+            韩仁伟,13911111111,安徽省安庆市太湖县新仓镇，塔山村，前进组
+        </li>
+        <li>
+            北京市北京市东城区建设路紫薇花园 13311111111 何晓旭
+        </li>
+        <li>
+            13311111111 上海市黄浦区 建设路 紫薇花园  何晓旭
+        </li>
     </ul>
 </div>
     <div class="content">
+        <h4>识别方式</h4>
+        <select class="select" id="select">
+            <option value="0">正则匹配</option>
+            <option value="1">树查找</option>
+        </select>
+        <h4>输入或点击上方地址</h4>
         <textarea id="addressContent" placeholder="请输入地址"></textarea>
-        <p>识别结果</p>
+        <h4>识别结果</h4>
         <div id="result">
         </div>
     </div>
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-<script async defer src="./zh-address-parse.min.js"></script>
-<script
-    src="https://code.jquery.com/jquery-3.4.1.min.js"
-    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-    crossorigin="anonymous"></script>
-
-<script>
-    const parse = () => {
-        const onTextAreaBlur = (e) => {
-            const address = e.target.value
-            const parseResult = ZhAddressParse(address)
-            console.log(parseResult)
-            $('#result').empty();
-            $('#result').append(`<ul>${Object.entries(parseResult).map(([k, v]) => `<li>${k}：${v}</li>`).join('')}</ul>`)
-        }
-        $('#addressContent').bind('input propertychange', onTextAreaBlur)
-
-        $('#addressList li').on('click', (e) => {
-            $('#addressContent').val(e.target.innerText)
-            $('#addressContent')[0].dispatchEvent(new Event('input'));
-        })
-    }
-
-    parse()
-</script>
-</body>
+<script type="text/javascript" src="zh-address-parse.min.js"></script></body>
 </html>
 
