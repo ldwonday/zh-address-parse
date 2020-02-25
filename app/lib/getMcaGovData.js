@@ -165,10 +165,6 @@ class GetMcaGovData {
             throw new Error('parse with error !')
         }
     }
-
-    processData2 = () => {
-
-    }
 }
 
 const data = new GetMcaGovData('http://www.mca.gov.cn/article/sj/xzqh/2019/2019/202002191838.html', 'xl7214735', 'xl7314735')
