@@ -1,0 +1,175 @@
+import cheerio from 'cheerio'
+import http from 'http'
+import path from 'path'
+
+const fs = require('fs');
+
+const Province = () => ({
+    code: '',
+    name: '',
+    children: []
+})
+
+const Area = () => ({
+    code: '',
+    name: '',
+})
+
+const City = () => ({
+    code: '',
+    name: '',
+    children: []
+})
+
+class GetMcaGovData {
+    sourceUrl = ''
+    headerClass = ''
+    cityClass = ''
+    constructor(sourceUrl, headerClass, cityClass) {
+        this.sourceUrl = sourceUrl
+        this.headerClass = headerClass
+        this.cityClass = cityClass
+    }
+
+    loadData = () => {
+        if (!this.sourceUrl) {
+            throw new Error('not set the url of parser !')
+        }
+        if (!this.headerClass || !this.cityClass) {
+            throw new Error('not set the city or header class of header !')
+        }
+        try {
+            http.get(this.sourceUrl, (res) => {
+                // 设置编码
+                res.setEncoding('utf8');
+                // 当接收到数据时，会触发 'data' 事件的执行
+                let html = "";
+                res.on('data', (data) => {
+                    html += data;
+                });
+                // 数据接收完毕，会触发 'end' 事件的执行
+                res.on('end', () => {
+                    const $ = cheerio.load(html);
+
+                    // 去除里面的空格和空值
+                    let elementsArea = $('.' + this.cityClass)
+                    // 注意这里的filter用的是cheerio的filter不是es6的
+                    elementsArea = elementsArea.filter((index, item) => $(item).text().trim())
+
+                    let elementsProAndCity = $('.' + this.headerClass)
+                    elementsProAndCity = elementsProAndCity.filter((index, item) => $(item).text().trim())
+
+                    console.log('省市总计数量：' + elementsProAndCity.length / 2)
+                    console.log('区总计数量：' + elementsArea.length / 2)
+                    let total = (elementsArea.length + elementsProAndCity.length) / 2
+                    console.log('省市区总计数量：' + total)
+
+                    const listProvince = []
+                    for(let i = 0; i <= elementsProAndCity.length; i += 2) {
+                        const codeOrName = $(elementsProAndCity[i]).text().trim()
+                        const next = $(elementsProAndCity[i + 1]).text().trim()
+                        if (/\d/.test(codeOrName)) {
+                            // 省份
+                            if (codeOrName.endsWith('0000')) {
+                                const province = new Province()
+                                province.name = next
+                                province.code = codeOrName
+                                province.children = province.children || []
+                                listProvince.push(province)
+                            } else { // 市
+                                const city = new City()
+                                city.name = next
+                                city.code = codeOrName
+                                city.children = city.children || []
+
+                                // 省份前缀
+                                const prefixProvinceCode = codeOrName.substring(0, 2)
+                                // 市区前缀
+                                const prefixCityCode = codeOrName.substring(2, 4)
+                                const provinceRegexp = new RegExp(`^${prefixProvinceCode}`)
+                                // 市前缀匹配，加入到省份里面
+                                const province = listProvince.find(item => {
+                                    return provinceRegexp.test(item.code)
+                                })
+                                province && province.children.push(city)
+                            }
+                        } else {
+                            i += 1
+                        }
+                    }
+
+                    // 处理区和县
+                    listProvince.forEach(item => {
+                        // 省份前缀
+                        const prefixProvinceCode = item.code.substring(0, 2)
+                        const cityList = item.children
+
+                        // 对于区，一个个处理，处理一个删除一个
+                        do {
+                            let codeOrName = $(elementsArea[0]).text().trim()
+                            let next = $(elementsArea[1]).text().trim()
+
+                            // 匹配省份
+                            let regExp = new RegExp(`^${prefixProvinceCode}`)
+                            if (/\d/.test(codeOrName)) {
+                                if (regExp.test(codeOrName)) {
+                                    const area = new Area()
+                                    area.code = codeOrName
+                                    area.name = next
+
+                                    // 取区中间两位市的代号
+                                    const prefixCityCode = codeOrName.substring(2, 4)
+                                    regExp = new RegExp(`^${prefixProvinceCode}${prefixCityCode}`)
+
+                                    // 找出市，找到就加入到市里的下面的区，找不到就直接加入到市里面去
+                                    const currentCity = cityList.find(cityItem => regExp.test(cityItem.code) && cityItem.code.endsWith('00'))
+                                    if (cityList.length && currentCity) {
+                                        currentCity.children.push(area)
+                                    } else {
+                                        cityList.push(area)
+                                    }
+                                    elementsArea.splice(0, 2)
+                                } else {
+                                    break
+                                }
+                            }
+                        } while (elementsArea.length > 0)
+                    })
+
+                    let i = 0
+                    listProvince.forEach(p => {
+                        i++
+                        p.children.forEach(c => {
+                            i++
+                            c.children && c.children.forEach(a => {
+                                i++
+                            })
+                        })
+                    })
+
+                    console.log('解析完成总计数量：' + i, total)
+                    console.log('解析数量是否相等：' + (i === total ? '相等' : '不相等'))
+
+                    if (i === total) {
+                        fs.writeFile(path.join(__dirname, 'provinceList.json'), JSON.stringify(listProvince), function(err) {
+                            if (err)
+                                return;
+                            console.log('导出成功')
+                        });
+                    } else {
+                        throw new Error('解析前后数量不相等，解析失败！')
+                    }
+                })
+            });
+        } catch (e) {
+            throw new Error('parse with error !')
+        }
+    }
+
+    processData2 = () => {
+
+    }
+}
+
+const data = new GetMcaGovData('http://www.mca.gov.cn/article/sj/xzqh/2019/2019/202002191838.html', 'xl7214735', 'xl7314735')
+data.loadData()

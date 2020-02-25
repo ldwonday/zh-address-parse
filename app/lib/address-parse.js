@@ -1,5 +1,5 @@
 import zhCnNames from './names'
-import addressJson from './pca-code'
+import addressJson from './provinceList'
 
 const log = (...infos) => {
     if (process.env.NODE_ENV !== 'production') {
@@ -12,15 +12,15 @@ const provinces = addressJson.reduce((per, cur) => {
 }, [])
 
 const cities = addressJson.reduce((per, cur) => {
-    return per.concat(cur.children.map(({children, ...others}) => ({...others, provinceCode: cur.code})))
+    return per.concat(cur.children ? cur.children.map(({children, ...others}) => ({...others, provinceCode: cur.code})) : [])
 }, [])
 
 const areas = addressJson.reduce((per, cur) => {
     const provinceCode = cur.code
-    return per.concat(cur.children.reduce((p, c) => {
+    return per.concat(cur.children ? cur.children.reduce((p, c) => {
         const cityCode = c.code
-        return p.concat(c.children.map(({children, ...others}) => ({...others, cityCode, provinceCode,})))
-    }, []))
+        return p.concat(c.children ? c.children.map(({children, ...others}) => ({...others, cityCode, provinceCode,})) : [])
+    }, []) : [])
 }, [])
 
 const provinceString = JSON.stringify(provinces)
@@ -30,6 +30,8 @@ const areaString = JSON.stringify(areas)
 log(provinces)
 log(cities)
 log(areas)
+
+console.log(provinces.length + cities.length + areas.length)
 
 /**
  * 需要解析的地址，type是解析的方式，默认是正则匹配
