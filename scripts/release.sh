@@ -1,6 +1,8 @@
 set -e
 echo "Enter release version: "
 read VERSION
+echo "Enter commit message: "
+read MESSAGE
 
 read -p "Releasing $VERSION - are you sure? (y/n)" -n 1 -r
 echo # (optional) move to a new line
@@ -11,7 +13,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     npm run build-lib
 
     git add .
-    git commit -m "$VERSION"
+    git commit -m "$MESSAGE"
     git push origin develop
 
     npm version $VERSION --message "build: $VERSION"

@@ -93,8 +93,6 @@ class GetMcaGovData {
                                 })
                                 province && province.children.push(city)
                             }
-                        } else {
-                            i += 1
                         }
                     }
 

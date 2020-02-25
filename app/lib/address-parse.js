@@ -165,7 +165,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
         }
 
         if (province[0]) {
-            fragment = fragment.replace(matchStr, '')
+            fragment = fragment.replace(new RegExp(matchStr, 'g'), '')
         }
 
     }
@@ -188,7 +188,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
         }
         if (city[0]) {
             const {provinceCode} = city[0]
-            fragment = fragment.replace(matchStr, '')
+            fragment = fragment.replace(new RegExp(matchStr, 'g'), '')
             if (province.length === 0) {
                 const regexProvince = new RegExp(`\{\"code\":\"${provinceCode}\",\"name\":\"[\u4E00-\u9FA5]+?\"}`, 'g')
                 const matchProvince = provinceString.match(regexProvince)
@@ -270,7 +270,7 @@ const parseRegion = (fragment, hasParseResult) => {
             }
             if (replaceName) {
                 province.push(tempProvince)
-                fragment = fragment.replace(replaceName, '')
+                fragment = fragment.replace(new RegExp(replaceName, 'g'), '')
                 break
             }
         }
@@ -295,7 +295,7 @@ const parseRegion = (fragment, hasParseResult) => {
                     }
                     if (replaceName) {
                         city.push(tempCity)
-                        fragment = fragment.replace(replaceName, '')
+                        fragment = fragment.replace(new RegExp(replaceName, 'g'), '')
                         break
                     }
                 }
