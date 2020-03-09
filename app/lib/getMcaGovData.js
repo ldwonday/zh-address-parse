@@ -119,12 +119,21 @@ class GetMcaGovData {
                                     const prefixCityCode = codeOrName.substring(2, 4)
                                     regExp = new RegExp(`^${prefixProvinceCode}${prefixCityCode}`)
 
-                                    // 找出市，找到就加入到市里的下面的区，找不到就直接加入到市里面去
+                                    // 找出市，找到就加入到市里的下面的区
                                     const currentCity = cityList.find(cityItem => regExp.test(cityItem.code) && cityItem.code.endsWith('00'))
                                     if (cityList.length && currentCity) {
                                         currentCity.children.push(area)
                                     } else {
-                                        cityList.push(area)
+                                        // 解析直辖市下面的区和县
+                                        if (cityList.length === 0) {
+                                            const city = new City()
+                                            city.name = item.name
+                                            city.code = item.code
+                                            city.children.push(area)
+                                            cityList.push(city)
+                                        } else {
+                                            cityList[0].children.push(area)
+                                        }
                                     }
                                     elementsArea.splice(0, 2)
                                 } else {
@@ -145,10 +154,12 @@ class GetMcaGovData {
                         })
                     })
 
-                    console.log('解析完成总计数量：' + i, total)
-                    console.log('解析数量是否相等：' + (i === total ? '相等' : '不相等'))
+                    // 多了4个直辖市
+                    const parseTotal = i - 4
+                    console.log('解析完成总计数量：' + parseTotal, total)
+                    console.log('解析数量是否相等：' + (parseTotal === total ? '相等' : '不相等'))
 
-                    if (i === total) {
+                    if (parseTotal === total) {
                         fs.writeFile(path.join(__dirname, 'provinceList.json'), JSON.stringify(listProvince), function(err) {
                             if (err)
                                 return;
