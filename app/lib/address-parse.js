@@ -36,12 +36,12 @@ console.log(provinces.length + cities.length + areas.length)
 /**
  * 需要解析的地址，type是解析的方式，默认是正则匹配
  * @param address
- * @param options：type： 0:正则，1：树查找, textFilter： 清洗的字段
+ * @param options?：type： 0:正则，1：树查找, textFilter： 清洗的字段
  * @returns {{}|({area: Array, province: Array, phone: string, city: Array, name: string, detail: Array} & {area: (*|string), province: (*|string), city: (*|string), detail: (Array|boolean|string|string)})}
  * @constructor
  */
 const AddressParse = (address, options) => {
-    const { type = 0, textFilter = [], nameMaxLength = 4 } = typeof options === 'object' ? options : {}
+    const { type = 0, textFilter = [], nameMaxLength = 4 } = typeof options === 'object' ? options : (typeof options === 'number' ? { type: options } : {})
 
     if (!address) {
         return {}
