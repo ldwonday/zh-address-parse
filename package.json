@@ -47,5 +47,6 @@
     "webpack-cli": "3.3.9",
     "webpack-dev-server": "3.8.1",
     "webpack-merge": "4.2.2"
-  }
+  },
+  "main": "./index.js"
 }
