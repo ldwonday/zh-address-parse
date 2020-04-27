@@ -73,7 +73,7 @@ const AddressParse = (address, options) => {
     const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
     log('分割地址 --->', splitAddress)
 
-    const d1 = new Date().getTime()
+    console.time()
 
     // 找省市区和详细地址
     splitAddress.forEach((item, index) => {
@@ -95,9 +95,8 @@ const AddressParse = (address, options) => {
 
     console.log('--->', splitAddress)
 
-    const d2 = new Date().getTime()
-
-    log('解析耗时--->', d2 - d1)
+    log('解析耗时--->')
+    console.timeEnd()
 
     const province = parseResult.province[0]
     const city = parseResult.city[0]
