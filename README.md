@@ -16,6 +16,10 @@ option可选参数属性列表
 |nameMaxLength|中文名最大长度|Number|否|4|
 
 ## Usage
+> npm
+```sh
+npm i zh-address-parse -s
+```
 > import
 
 ```js
