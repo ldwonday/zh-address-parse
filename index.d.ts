@@ -8,7 +8,7 @@ declare namespace zhAddressParse{
         area: string,
         detail: string,
         phone: string,
-        postalCode?: string
+        postalCode: string
     }
 
     export type OptionType = {
