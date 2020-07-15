@@ -13,7 +13,7 @@ declare namespace zhAddressParse{
 
     export type OptionType = {
         type: 0 | 1,
-        textFilter: string,
+        textFilter: string[],
         nameMaxLength: number
     }
 }

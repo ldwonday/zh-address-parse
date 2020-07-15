@@ -1,10 +1,11 @@
 {
   "name": "zh-address-parse",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "chinese address parse",
   "author": "wonday",
   "license": "MIT",
   "homepage": "https://github.com/ldwonday/zh-address-parse",
+  "typings": "./index.d.ts",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --progress --mode development --config webpack.config.dev.js",
     "build": "webpack -p --progress --mode production --config webpack.config.build.js",
