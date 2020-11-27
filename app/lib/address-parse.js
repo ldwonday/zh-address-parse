@@ -1,5 +1,5 @@
 import zhCnNames from './names'
-import addressJson from './pca-code.json'
+import addressJson from './provinceList'
 
 const log = (...infos) => {
     if (process.env.NODE_ENV !== 'production') {
@@ -41,7 +41,7 @@ const provinceString = JSON.stringify(provinces)
 const cityString = JSON.stringify(cities)
 const areaString = JSON.stringify(areas)
 
-log(areas)
+log(provinces)
 log(cities)
 
 log(provinces.length + cities.length + areas.length)
@@ -82,9 +82,8 @@ const AddressParse = (address, options) => {
     parseResult.postalCode = resultCode.postalCode
     log('获取邮编的结果 --->', address)
 
-    // 地址分割，排序
-    let splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
-    splitAddress = sortAddress(splitAddress)
+    // 地址分割
+    const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
     log('分割地址 --->', splitAddress)
 
     const d1 = new Date().getTime()
@@ -116,11 +115,7 @@ const AddressParse = (address, options) => {
     const province = parseResult.province[0]
     const city = parseResult.city[0]
     const area = parseResult.area[0]
-    let detail = parseResult.detail
-
-    detail = detail.map(item => item.replace(new RegExp(`${province && province.name}|${city && city.name}|${area && area.name}`, 'g'), ''))
-    detail = Array.from(new Set(detail))
-    log('去重后--->', detail)
+    const detail = parseResult.detail
 
     // 地址都解析完了，姓名应该是在详细地址里面
     if (detail && detail.length > 0) {
@@ -156,26 +151,6 @@ const AddressParse = (address, options) => {
         area: (area && area.name) || '',
         detail: (detail && detail.length > 0 && detail.join('')) || ''
     })
-}
-
-/**
- * 按照省市区县镇排序
- * @param splitAddress
- * @returns {*[]}
- */
-const sortAddress = (splitAddress) => {
-    const result = [];
-    const getIndex = (str) => {
-        return splitAddress.findIndex(item => item.indexOf(str) !== -1)
-    }
-    ['省', '市', '区', '县', '镇'].forEach(item => {
-        let index = getIndex(item)
-        if (index !== -1) {
-            result.push(splitAddress.splice(index, 1)[0])
-        }
-    })
-
-    return [...result, ...splitAddress];
 }
 
 /**
@@ -423,10 +398,6 @@ const parseRegion = (fragment, hasParseResult) => {
  * @returns {string}
  */
 const judgeFragmentIsName = (fragment, nameMaxLength) => {
-    if (fragment.length > nameMaxLength) {
-        return ''
-    }
-
     if (!fragment || !/[\u4E00-\u9FA5]/.test(fragment)) {
         return ''
     }
@@ -437,9 +408,8 @@ const judgeFragmentIsName = (fragment, nameMaxLength) => {
         return fragment
     }
 
-    const filters = ['省', '市', '区', '镇', '乡', '街道', '乡镇']
-    const isNotName = filters.findIndex(item => fragment.indexOf(item) !== -1) !== -1
-    if (isNotName) {
+    const filters = ['街道', '乡镇']
+    if (filters.findIndex(item => fragment.indexOf(item)) !== -1) {
         return '';
     }
 
@@ -521,8 +491,6 @@ const cleanAddress = (address, textFilter = []) => {
         '联系人手机号码',
         '手机号码',
         '手机号',
-        '自治区直辖县级行政区划',
-        '省直辖县级行政区划',
     ].concat(textFilter)
     search.forEach(str => {
         address = address.replace(new RegExp(str, 'g'), ' ')
