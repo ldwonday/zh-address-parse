@@ -8,8 +8,8 @@
   "typings": "./index.d.ts",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --progress --mode development --config webpack.config.dev.js",
-    "build": "webpack -p --progress --mode production --config webpack.config.build.js",
-    "build-lib": "webpack -p --progress --mode production --config webpack.config.build.lib.js",
+    "build": "cross-env NODE_ENV=production webpack -p --progress --mode production --config webpack.config.build.js",
+    "build-lib": "cross-env NODE_ENV=production webpack -p --progress --mode production --config webpack.config.build.lib.js",
     "push-release": "sh ./scripts/release.sh",
     "push-dev": "sh ./scripts/dev.sh",
     "fetch-data": "babel-node app/lib/getMcaGovData.js",

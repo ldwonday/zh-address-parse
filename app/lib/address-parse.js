@@ -6,6 +6,19 @@ const log = (...infos) => {
         console.log(...infos)
     }
 }
+const filterCity = ['行政区划']
+addressJson.forEach(item => {
+    if (item.children) {
+        item.children.forEach((city, cityIndex) => {
+            const index = filterCity.findIndex(filter => city.name.indexOf(filter) !== -1)
+            if (index !== -1) {
+                item.children = item.children.concat(city.children || [])
+                item.children.splice(cityIndex, 1)
+            }
+        })
+    }
+})
+log('完整的数据：', addressJson);
 const provinces = addressJson.reduce((per, cur) => {
     const {children, ...others} = cur
     return per.concat(others)
@@ -23,13 +36,13 @@ const areas = addressJson.reduce((per, cur) => {
     }, []) : [])
 }, [])
 
+
 const provinceString = JSON.stringify(provinces)
 const cityString = JSON.stringify(cities)
 const areaString = JSON.stringify(areas)
 
 log(provinces)
 log(cities)
-log(areas)
 
 log(provinces.length + cities.length + areas.length)
 
@@ -127,9 +140,14 @@ const AddressParse = (address, options) => {
 
     log(JSON.stringify(parseResult))
 
+    const provinceName = province && province.name
+    let cityName = city && city.name
+    if (['市辖区', '区', '县', '镇'].indexOf(cityName) !== -1) {
+        cityName = provinceName
+    }
     return Object.assign(parseResult, {
-        province: (province && province.name) || '',
-        city: (city && city.name) || '',
+        province: provinceName || '',
+        city: cityName || '',
         area: (area && area.name) || '',
         detail: (detail && detail.length > 0 && detail.join('')) || ''
     })
@@ -201,7 +219,7 @@ const parseRegionWithRegexp = (fragment, hasParseResult) => {
     if (area.length === 0) {
         for (let i = 1; i < fragment.length; i++) {
             const str = fragment.substring(0, i + 1)
-            const regexArea = new RegExp(`\{\"code\":\"[0-9]{1,6}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"cityCode\":\"${city[0] ? city[0].code : '[0-9]{1,6}'}\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
+            const regexArea = new RegExp(`\{\"code\":\"[0-9]{1,9}\",\"name\":\"${str}[\u4E00-\u9FA5]*?\",\"cityCode\":\"${city[0] ? city[0].code : '[0-9]{1,6}'}\",\"provinceCode\":\"${province[0] ? `${province[0].code}` : '[0-9]{1,6}'}\"\}`, 'g')
             const matchArea = areaString.match(regexArea)
             if (matchArea) {
                 const areaObj = JSON.parse(matchArea[0])
@@ -388,6 +406,11 @@ const judgeFragmentIsName = (fragment, nameMaxLength) => {
     const nameCall = ['先生', '小姐', '同志', '哥哥', '姐姐', '妹妹', '弟弟', '妈妈', '爸爸', '爷爷', '奶奶', '姑姑', '舅舅']
     if (nameCall.find(item => fragment.indexOf(item) !== -1)) {
         return fragment
+    }
+
+    const filters = ['街道', '乡镇']
+    if (filters.findIndex(item => fragment.indexOf(item)) !== -1) {
+        return '';
     }
 
     // 如果百家姓里面能找到这个姓，并且长度在1-5之间

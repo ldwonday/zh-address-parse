@@ -15,6 +15,7 @@ const appHtmlTitle = 'zh-address-parse';
  * Webpack Configuration
  */
 module.exports = {
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     entry: {
         vendor: [
             'lodash'
@@ -28,6 +29,7 @@ module.exports = {
             dirAssets
         ]
     },
+    devtool: process.env.NODE_ENV === 'production' ? 'nosources-source-map' : 'cheap-module-source-map',
     plugins: [
         new webpack.DefinePlugin({
             IS_DEV: IS_DEV
@@ -38,6 +40,9 @@ module.exports = {
             title: appHtmlTitle
         })
     ],
+    optimization: {
+        minimize: process.env.NODE_ENV === 'production', // 开启代码压缩
+    },
     module: {
         rules: [
             // BABEL
