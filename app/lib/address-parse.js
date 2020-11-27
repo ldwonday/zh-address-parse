@@ -491,6 +491,8 @@ const cleanAddress = (address, textFilter = []) => {
         '联系人手机号码',
         '手机号码',
         '手机号',
+        '自治区直辖县级行政区划',
+        '省直辖县级行政区划',
     ].concat(textFilter)
     search.forEach(str => {
         address = address.replace(new RegExp(str, 'g'), ' ')
