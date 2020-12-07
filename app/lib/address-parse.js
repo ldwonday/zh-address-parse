@@ -82,8 +82,8 @@ const AddressParse = (address, options) => {
     parseResult.postalCode = resultCode.postalCode
     log('获取邮编的结果 --->', address)
 
-    // 地址分割
-    const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
+    // 地址分割，排序
+    const splitAddress = address.split(' ').filter(item => item).map(item => item.trim()).sort((a, b) => b.length - a.length)
     log('分割地址 --->', splitAddress)
 
     const d1 = new Date().getTime()
