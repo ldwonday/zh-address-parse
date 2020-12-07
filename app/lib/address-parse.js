@@ -83,7 +83,8 @@ const AddressParse = (address, options) => {
     log('获取邮编的结果 --->', address)
 
     // 地址分割，排序
-    const splitAddress = address.split(' ').filter(item => item).map(item => item.trim()).sort((a, b) => b.length - a.length)
+    let splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
+    splitAddress = sortAddress(splitAddress)
     log('分割地址 --->', splitAddress)
 
     const d1 = new Date().getTime()
@@ -151,6 +152,21 @@ const AddressParse = (address, options) => {
         area: (area && area.name) || '',
         detail: (detail && detail.length > 0 && detail.join('')) || ''
     })
+}
+
+const sortAddress = (splitAddress) => {
+    const result = [];
+    const getIndex = (str) => {
+        return splitAddress.findIndex(item => item.indexOf(str) !== -1)
+    }
+    ['省', '市', '区', '县', '镇'].forEach(item => {
+        let index = getIndex(item)
+        if (index !== -1) {
+            result.push(splitAddress.splice(index, 1)[0])
+        }
+    })
+
+    return [...result, ...splitAddress];
 }
 
 /**
