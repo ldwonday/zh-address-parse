@@ -414,6 +414,10 @@ const parseRegion = (fragment, hasParseResult) => {
  * @returns {string}
  */
 const judgeFragmentIsName = (fragment, nameMaxLength) => {
+    if (fragment.length > nameMaxLength) {
+        return ''
+    }
+
     if (!fragment || !/[\u4E00-\u9FA5]/.test(fragment)) {
         return ''
     }
