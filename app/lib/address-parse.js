@@ -116,7 +116,11 @@ const AddressParse = (address, options) => {
     const province = parseResult.province[0]
     const city = parseResult.city[0]
     const area = parseResult.area[0]
-    const detail = parseResult.detail
+    let detail = parseResult.detail
+
+    detail = detail.map(item => item.replace(new RegExp(`[${province && province.name}|${city && city.name}|${area && area.name}]`, 'g'), ''))
+    detail = Array.from(new Set(detail))
+    log('去重后--->', detail)
 
     // 地址都解析完了，姓名应该是在详细地址里面
     if (detail && detail.length > 0) {
@@ -125,6 +129,7 @@ const AddressParse = (address, options) => {
         log('copyDetail --->', copyDetail)
         // 排序后从最短的开始找名字，没找到的话就看第一个是不是咯
         const index = copyDetail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
+        console.log(4444, index)
         let name = ''
         if (index !== -1) {
             name = copyDetail[index]
@@ -154,6 +159,11 @@ const AddressParse = (address, options) => {
     })
 }
 
+/**
+ * 按照省市区县镇排序
+ * @param splitAddress
+ * @returns {*[]}
+ */
 const sortAddress = (splitAddress) => {
     const result = [];
     const getIndex = (str) => {
@@ -428,8 +438,9 @@ const judgeFragmentIsName = (fragment, nameMaxLength) => {
         return fragment
     }
 
-    const filters = ['街道', '乡镇']
-    if (filters.findIndex(item => fragment.indexOf(item)) !== -1) {
+    const filters = ['省', '市', '区', '镇', '乡', '街道', '乡镇']
+    const isNotName = filters.findIndex(item => fragment.indexOf(item) !== -1) !== -1
+    if (isNotName) {
         return '';
     }
 
