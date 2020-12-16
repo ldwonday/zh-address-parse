@@ -118,7 +118,7 @@ const AddressParse = (address, options) => {
     const area = parseResult.area[0]
     let detail = parseResult.detail
 
-    detail = detail.map(item => item.replace(new RegExp(`[${province && province.name}|${city && city.name}|${area && area.name}]`, 'g'), ''))
+    detail = detail.map(item => item.replace(new RegExp(`${province && province.name}|${city && city.name}|${area && area.name}`, 'g'), ''))
     detail = Array.from(new Set(detail))
     log('去重后--->', detail)
 
@@ -129,7 +129,6 @@ const AddressParse = (address, options) => {
         log('copyDetail --->', copyDetail)
         // 排序后从最短的开始找名字，没找到的话就看第一个是不是咯
         const index = copyDetail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
-        console.log(4444, index)
         let name = ''
         if (index !== -1) {
             name = copyDetail[index]
