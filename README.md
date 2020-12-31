@@ -1,7 +1,9 @@
 China's delivery address parse
 ===========
 ## New Feature
-> 增加自定义解析[国家统计局数据](http://www.mca.gov.cn/article/sj/xzqh/2020/2020/202003301019.html)，数据更新至2020年2月26日，代码：[https://github.com/ldwonday/zh-address-parse/blob/master/app/lib/getMcaGovData.js](https://github.com/ldwonday/zh-address-parse/blob/master/app/lib/getMcaGovData.js)
+
+> 增加自定义解析[国家统计局数据](http://www.mca.gov.cn/article/sj/xzqh/2020/2020/2020112010001.html)，数据更新至 2020-11-20，代码：[https://github.com/ldwonday/zh-address-parse/blob/master/app/lib/getMcaGovData.js](https://github.com/ldwonday/zh-address-parse/blob/master/app/lib/getMcaGovData.js)
+
 ## Preview
 [Test page](https://ldwonday.github.io/zh-address-parse/)
 ## Syntax

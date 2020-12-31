@@ -177,5 +177,9 @@ class GetMcaGovData {
 }
 
 // headerClass和cityClass在统计局的官网查看css的class
-const data = new GetMcaGovData('http://www.mca.gov.cn/article/sj/xzqh/2020/2020/202003301019.html', 'xl7030721', 'xl7130721')
+const data = new GetMcaGovData(
+    'http://www.mca.gov.cn/article/sj/xzqh/2020/2020/2020112010001.html',
+    'xl7014987',
+    'xl7114987'
+)
 data.loadData()
