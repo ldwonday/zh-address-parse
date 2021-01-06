@@ -1,5 +1,5 @@
 import zhCnNames from './names'
-import addressJson from './provinceList'
+import addressJson from './pca-code.json'
 
 const log = (...infos) => {
     if (process.env.NODE_ENV !== 'production') {
@@ -41,7 +41,7 @@ const provinceString = JSON.stringify(provinces)
 const cityString = JSON.stringify(cities)
 const areaString = JSON.stringify(areas)
 
-log(provinces)
+log(areas)
 log(cities)
 
 log(provinces.length + cities.length + areas.length)
