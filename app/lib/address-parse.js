@@ -10,8 +10,8 @@ const filterCity = ['行政区划']
 addressJson.forEach(item => {
     if (item.children) {
         item.children.forEach((city, cityIndex) => {
-            const index = filterCity.findIndex(filter => city.name.indexOf(filter) !== -1)
-            if (index !== -1) {
+            const index = ~filterCity.findIndex(filter => ~city.name.indexOf(filter))
+            if (index) {
                 item.children = item.children.concat(city.children || [])
                 item.children.splice(cityIndex, 1)
             }
@@ -82,8 +82,10 @@ const AddressParse = (address, options) => {
     parseResult.postalCode = resultCode.postalCode
     log('获取邮编的结果 --->', address)
 
-    // 地址分割
-    const splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
+    // 地址分割，排序
+    let splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
+    // 这里先不排序了，排序可能出现问题，比如：北京 北京市
+    // splitAddress = sortAddress(splitAddress)
     log('分割地址 --->', splitAddress)
 
     const d1 = new Date().getTime()
@@ -115,17 +117,21 @@ const AddressParse = (address, options) => {
     const province = parseResult.province[0]
     const city = parseResult.city[0]
     const area = parseResult.area[0]
-    const detail = parseResult.detail
+    let detail = parseResult.detail
+
+    detail = detail.map(item => item.replace(new RegExp(`${province && province.name}|${city && city.name}|${area && area.name}`, 'g'), ''))
+    detail = Array.from(new Set(detail))
+    log('去重后--->', detail)
 
     // 地址都解析完了，姓名应该是在详细地址里面
     if (detail && detail.length > 0) {
-        const copyDetail = [...detail]
+        const copyDetail = [...detail].filter(item => !!item)
         copyDetail.sort((a, b) => a.length - b.length)
         log('copyDetail --->', copyDetail)
         // 排序后从最短的开始找名字，没找到的话就看第一个是不是咯
         const index = copyDetail.findIndex(item => judgeFragmentIsName(item, nameMaxLength))
         let name = ''
-        if (index !== -1) {
+        if (~index) {
             name = copyDetail[index]
         } else if (copyDetail[0].length <= nameMaxLength && /[\u4E00-\u9FA5]/.test(copyDetail[0])) {
             name = copyDetail[0]
@@ -142,7 +148,7 @@ const AddressParse = (address, options) => {
 
     const provinceName = province && province.name
     let cityName = city && city.name
-    if (['市辖区', '区', '县', '镇'].indexOf(cityName) !== -1) {
+    if (~['市辖区', '区', '县', '镇'].indexOf(cityName)) {
         cityName = provinceName
     }
     return Object.assign(parseResult, {
@@ -151,6 +157,26 @@ const AddressParse = (address, options) => {
         area: (area && area.name) || '',
         detail: (detail && detail.length > 0 && detail.join('')) || ''
     })
+}
+
+/**
+ * 按照省市区县镇排序
+ * @param splitAddress
+ * @returns {*[]}
+ */
+const sortAddress = (splitAddress) => {
+    const result = [];
+    const getIndex = (str) => {
+        return splitAddress.findIndex(item => ~item.indexOf(str))
+    }
+    ['省', '市', '区', '县', '镇'].forEach(item => {
+        let index = getIndex(item)
+        if (~index) {
+            result.push(splitAddress.splice(index, 1)[0])
+        }
+    })
+
+    return [...result, ...splitAddress];
 }
 
 /**
@@ -404,18 +430,18 @@ const judgeFragmentIsName = (fragment, nameMaxLength) => {
 
     // 如果包含下列称呼，则认为是名字，可自行添加
     const nameCall = ['先生', '小姐', '同志', '哥哥', '姐姐', '妹妹', '弟弟', '妈妈', '爸爸', '爷爷', '奶奶', '姑姑', '舅舅']
-    if (nameCall.find(item => fragment.indexOf(item) !== -1)) {
+    if (nameCall.find(item => ~fragment.indexOf(item))) {
         return fragment
     }
 
     const filters = ['街道', '乡镇']
-    if (filters.findIndex(item => fragment.indexOf(item)) !== -1) {
+    if (~filters.findIndex(item => ~fragment.indexOf(item))) {
         return '';
     }
 
     // 如果百家姓里面能找到这个姓，并且长度在1-5之间
     const nameFirst = fragment.substring(0, 1)
-    if (fragment.length <= nameMaxLength && fragment.length > 1 && zhCnNames.indexOf(nameFirst) !== -1) {
+    if (fragment.length <= nameMaxLength && fragment.length > 1 && ~zhCnNames.indexOf(nameFirst)) {
         return fragment
     }
 
@@ -491,6 +517,8 @@ const cleanAddress = (address, textFilter = []) => {
         '联系人手机号码',
         '手机号码',
         '手机号',
+        '自治区直辖县级行政区划',
+        '省直辖县级行政区划',
     ].concat(textFilter)
     search.forEach(str => {
         address = address.replace(new RegExp(str, 'g'), ' ')
