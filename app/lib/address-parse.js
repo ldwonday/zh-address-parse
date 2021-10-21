@@ -85,7 +85,7 @@ const AddressParse = (address, options) => {
     // 地址分割，排序
     let splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
     // 这里先不排序了，排序可能出现问题，比如：北京 北京市
-    // splitAddress = sortAddress(splitAddress)
+    splitAddress = sortAddress(splitAddress)
     log('分割地址 --->', splitAddress)
 
     const d1 = new Date().getTime()
@@ -434,7 +434,7 @@ const judgeFragmentIsName = (fragment, nameMaxLength) => {
         return fragment
     }
 
-    const filters = ['街道', '乡镇']
+    const filters = ['街道', '乡镇', '镇', '乡']
     if (~filters.findIndex(item => ~fragment.indexOf(item))) {
         return '';
     }
