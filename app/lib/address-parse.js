@@ -37,12 +37,13 @@ const areas = addressJson.reduce((per, cur) => {
 }, [])
 
 
-const provinceString = JSON.stringify(provinces)
-const cityString = JSON.stringify(cities)
-const areaString = JSON.stringify(areas)
+let provinceString = JSON.stringify(provinces)
+let cityString = JSON.stringify(cities)
+let areaString = JSON.stringify(areas)
 
 log(provinces)
 log(cities)
+log(areas)
 
 log(provinces.length + cities.length + areas.length)
 
@@ -54,11 +55,13 @@ log(provinces.length + cities.length + areas.length)
  * @constructor
  */
 const AddressParse = (address, options) => {
-    const { type = 0, textFilter = [], nameMaxLength = 4 } = typeof options === 'object' ? options : (typeof options === 'number' ? { type: options } : {})
+    const { type = 0, extraGovData = {}, textFilter = [], nameMaxLength = 4 } = typeof options === 'object' ? options : (typeof options === 'number' ? { type: options } : {})
 
     if (!address) {
         return {}
     }
+
+    setExtraGovData(extraGovData);
 
     const parseResult = {
         phone: '',
@@ -157,6 +160,28 @@ const AddressParse = (address, options) => {
         area: (area && area.name) || '',
         detail: (detail && detail.length > 0 && detail.join('')) || ''
     })
+}
+
+/**
+ * 设置额外的国家地理信息
+ * @param extraGovData
+ */
+const setExtraGovData = (extraGovData) => {
+    const { province, city, area } = extraGovData;
+    if (province) {
+        provinces.push(...province);
+        provinceString = JSON.stringify(provinces);
+    }
+
+    if (province) {
+        cities.push(...city);
+        cityString = JSON.stringify(cities);
+    }
+
+    if (province) {
+        areas.push(...area);
+        areaString = JSON.stringify(areas);
+    }
 }
 
 /**
@@ -505,7 +530,6 @@ const cleanAddress = (address, textFilter = []) => {
         '收件地址',
         '地址',
         '所在地区',
-        '地区',
         '姓名',
         '收货人',
         '收件人',

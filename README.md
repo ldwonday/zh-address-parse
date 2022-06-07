@@ -11,11 +11,24 @@ China's delivery address parse
 
 option可选参数属性列表
 
-|参数名|说明|类型|是否必填|默认值|
-|----|----|----|----|----|
-|type|解析方式|Number|否|0|
-|textFilter|预过滤字段|Array|否|[]|
-|nameMaxLength|中文名最大长度|Number|否|4|
+|参数名| 说明       | 类型                                                         | 是否必填 | 默认值 |
+|----|----------|------------------------------------------------------------|------|-----|
+|type| 解析方式     | Number                                                     | 否    | 0   |
+|textFilter| 预过滤字段    | Array                                                      | 否    | []  |
+|nameMaxLength| 中文名最大长度  | Number                                                     | 否    | 4   |
+|extraGovData| 额外的省市区数据 | { city?: GovData[]; area: GovData[]; province: GovData[] } | 否    | -   |
+
+
+extraGovData 定义如下：
+
+```ts
+type GovData = {
+    code: string;
+    provinceCode?: string;
+    cityCode?: string;
+    name: string;
+}
+```
 
 ## Usage
 > npm
@@ -33,6 +46,7 @@ const options = {
   type: 0, // 哪种方式解析，0：正则，1：树查找
   textFilter: [], // 预清洗的字段
   nameMaxLength: 4, // 查找最大的中文名字长度
+  extraGovData: { city: [{ name: 'name', code: 'code', provinceCode: 'provinceCode' }], province: [{ name: 'name', code: 'code' }], area: [{ name: 'name', code: 'code', provinceCode: 'provinceCode', cityCode: 'cityCode' }] }
 }
 // type参数0表示使用正则解析，1表示采用树查找, textFilter地址预清洗过滤字段。
 const parseResult = AddressParse('your address', options)
