@@ -86,7 +86,7 @@ const AddressParse = (address, options) => {
     log('获取邮编的结果 --->', address)
 
     // 地址分割，排序
-    let splitAddress = address.split(' ').filter(item => item).map(item => item.trim())
+    let splitAddress = address.split(' ').filter(item => item && !/^\d+$/.test(item)).map(item => item.trim());
     // 这里先不排序了，排序可能出现问题，比如：北京 北京市
     splitAddress = sortAddress(splitAddress)
     log('分割地址 --->', splitAddress)
@@ -502,7 +502,7 @@ const filterPhone = (address) => {
  */
 const filterPostalCode = (address) => {
     let postalCode = ''
-    const postalCodeReg = /\d{6}/g
+    const postalCodeReg = /[1-9]\d{5}(?!\d)/g
     const code = postalCodeReg.exec(address)
     if (code) {
         postalCode = code[0]
