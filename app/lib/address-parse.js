@@ -492,7 +492,7 @@ const filterPhone = (address) => {
         phone = mobile[0]
         address = address.replace(mobile[0], ' ')
     }
-    return {address, phone: phone.replace(/\+?86-?/g, '')}
+    return {address, phone: phone.replace(/^\+?86-?/g, '')}
 }
 
 /**
