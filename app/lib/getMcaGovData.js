@@ -1,5 +1,5 @@
 import cheerio from 'cheerio'
-import http from 'http'
+import http from 'https'
 import path from 'path'
 
 const fs = require('fs');
@@ -124,6 +124,8 @@ class GetMcaGovData {
                                     if (cityList.length && currentCity) {
                                         currentCity.children.push(area)
                                     } else {
+                                        const exclude = ['北京市', '重庆市', '上海市', '天津市'];
+
                                         // 解析直辖市下面的区和县
                                         if (cityList.length === 0) {
                                             const city = new City()
@@ -131,6 +133,8 @@ class GetMcaGovData {
                                             city.code = item.code
                                             city.children.push(area)
                                             cityList.push(city)
+                                        } else if (!exclude.includes(item.name)) {
+                                            cityList.push(area)
                                         } else {
                                             cityList[0].children.push(area)
                                         }
@@ -178,7 +182,7 @@ class GetMcaGovData {
 
 // headerClass和cityClass在统计局的官网查看css的class
 const data = new GetMcaGovData(
-    'http://www.mca.gov.cn/article/sj/xzqh/2020/2020/2020112010001.html',
+    'https://www.mca.gov.cn/article/sj/xzqh/2020/2020/2020112010001.html',
     'xl7014987',
     'xl7114987'
 )
