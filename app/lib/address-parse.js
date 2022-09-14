@@ -136,7 +136,7 @@ const AddressParse = (address, options) => {
         let name = ''
         if (~index) {
             name = copyDetail[index]
-        } else if (copyDetail[0].length <= nameMaxLength && /[\u4E00-\u9FA5]/.test(copyDetail[0])) {
+        } else if (copyDetail[0] && copyDetail[0].length <= nameMaxLength && /[\u4E00-\u9FA5]/.test(copyDetail[0])) {
             name = copyDetail[0]
         }
 
