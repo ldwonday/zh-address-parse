@@ -106,6 +106,7 @@ const AddressParse = (address, options) => {
             parseResult.area = area || []
             parseResult.city = city || []
             parseResult.detail = parseResult.detail.concat(detail || [])
+            parseResult.areaCode =  parseResult.area[0]?.code || ''
         } else {
             parseResult.detail.push(item)
         }
@@ -553,7 +554,16 @@ const cleanAddress = (address, textFilter = []) => {
 
     // 多个空格replace为一个
     address = address.replace(/ {2,}/g, ' ')
-
+    //适配直辖市区
+    const municipality = [
+        '北京',
+        '上海',
+        '天津',
+        '重庆'
+    ]
+    municipality.forEach(str => {
+        address = address.replace(str+str, str)
+    })
     return address
 }
 
