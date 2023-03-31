@@ -14,17 +14,17 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
     git add .
     git commit -m "$MESSAGE"
-    git push origin develop
+    git push origin release
 
     npm version $VERSION --message "build: $VERSION"
     # commit
     git checkout master
-    git merge develop
+    git merge release
     git push origin master
 
     # publish
     git tag $VERSION -m "release: $VERSION"
     git push origin "$VERSION"
 
-    git checkout develop
+    git checkout release
 fi
