@@ -487,7 +487,7 @@ const filterPhone = (address) => {
     address = address.replace(/(\d{4}) \d{4} \d{4}/g, '$1$2$3')
     address = address.replace(/(\d{4})/g, '$1')
 
-    const mobileReg = /(0|\+?86-?|17951|)?1[3456789]\d{9}/g
+    const mobileReg = /(0|\+?86-?|17951|)?1[3456789]\d{9}(-\d{4})?/g
     const mobile = mobileReg.exec(address)
     if (mobile) {
         phone = mobile[0]
