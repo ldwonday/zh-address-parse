@@ -107,6 +107,8 @@ const AddressParse = (address, options) => {
             parseResult.city = city || []
             parseResult.detail = parseResult.detail.concat(detail || [])
             parseResult.areaCode =  parseResult.area[0]?.code || ''
+            parseResult.provinceCode =  parseResult.province[0]?.code || ''
+            parseResult.cityCode =  parseResult.city[0]?.code || ''
         } else {
             parseResult.detail.push(item)
         }
